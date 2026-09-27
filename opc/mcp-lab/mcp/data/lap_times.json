@@ -1,0 +1,20 @@
+[
+  {
+    "lap": 1,
+    "driver_id": "NOR",
+    "position": 1,
+    "lap_time_ms": 98234,
+    "gap_to_leader_ms": 0,
+    "tire_compound": "SOFT",
+    "tire_age": 1
+  },
+  {
+    "lap": 1,
+    "driver_id": "VER",
+    "position": 2,
+    "lap_time_ms": 98501,
+    "gap_to_leader_ms": 267,
+    "tire_compound": "MEDIUM",
+    "tire_age": 1
+  }
+]

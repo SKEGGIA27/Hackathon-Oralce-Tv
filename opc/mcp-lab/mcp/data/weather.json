@@ -1,0 +1,15 @@
+[
+  {
+    "lap": 1,
+    "air_temp_c": 27,
+    "track_temp_c": 39,
+    "rain_probability": 0.05
+  },
+  {
+    "lap": 20,
+    "air_temp_c": 24,
+    "track_temp_c": 31,
+    "rain_probability": 0.45
+  }
+]
+

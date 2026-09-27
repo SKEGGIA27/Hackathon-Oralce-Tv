@@ -1,0 +1,11 @@
+[
+  {
+    "lap": 18,
+    "driver_id": "NOR",
+    "stop_duration_ms": 24350,
+    "compound_in": "SOFT",
+    "compound_out": "MEDIUM",
+    "position_before": 1,
+    "position_after": 5
+  }
+]

@@ -1,0 +1,8 @@
+Listening on 127.0.0.1:36073
+[2026-05-23 06:17:39] info Disposed of connection to running server.
+[2026-05-23 06:17:39] info Checking /home/opc/.vscode-server/cli/servers/Stable-0958016b2af9f09bb4257e0df4a95e2f90590f9f/log.txt and /home/opc/.vscode-server/cli/servers/Stable-0958016b2af9f09bb4257e0df4a95e2f90590f9f/pid.txt for a running server...
+[2026-05-23 06:17:39] info Found running server (pid=42804)
+[2026-05-23 06:17:39] warn Visual Studio Code Server is running but its logfile is missing. Don't delete the Visual Studio Code Server manually, run the command 'code prune'.
+[2026-05-23 06:17:40] info Downloading Visual Studio Code server -> /tmp/.tmp9PCwLF/vscode-server-linux-arm64.tar.gz
+[2026-05-23 06:17:43] info Starting server...
+[2026-05-23 06:17:43] info Server started

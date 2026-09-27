@@ -1,0 +1,14 @@
+[
+  {
+    "lap": 14,
+    "event_type": "OVERTAKE",
+    "driver_id": "VER",
+    "target_driver_id": "NOR",
+    "position_change": { "from": 2, "to": 1 }
+  },
+  {
+    "lap": 22,
+    "event_type": "SAFETY_CAR",
+    "reason": "Debris on track"
+  }
+]

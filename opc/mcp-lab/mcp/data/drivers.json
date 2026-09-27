@@ -1,0 +1,14 @@
+[
+  {
+    "driver_id": "NOR",
+    "name": "Lando Norris",
+    "team": "McLaren",
+    "car_number": 4
+  },
+  {
+    "driver_id": "VER",
+    "name": "Max Verstappen",
+    "team": "Red Bull Racing",
+    "car_number": 1
+  }
+]
