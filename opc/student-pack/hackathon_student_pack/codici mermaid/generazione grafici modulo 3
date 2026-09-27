@@ -1,0 +1,42 @@
+flowchart TD
+    %% Nodi Principali
+    AI["<b>1. Risposta AI (mcp_client)</b><br/>Genera Testo + Metadati <code>chart_config</code><br/><i>(lap range, categorie, metriche)</i>"]
+    
+    UI["<b>2. Motore Streamlit (interface.py)</b><br/>• Mostra il testo nell'Answer Box<br/>• Legge <code>chart_config</code> e le Chip attive"]
+
+    Router{"<b>3. Smistamento Categorie</b><br/>Quali chip sono attive?"}
+
+    subgraph RENDERERS ["<b>4. Moduli Grafici Specializzati</b>"]
+        direction TB
+        Gomme["🏎️ <b>Gomme</b><br/>Usura %, Temp °C, Pressione"]
+        Energia["⚡ <b>Energia</b><br/>SoC Batteria %, ERS kJ"]
+        Freni["🛑 <b>Freni</b><br/>Temperature 4 Dischi °C"]
+        Posizione["📍 <b>Posizione</b><br/>Piazzamento e Tempi Giro"]
+    end
+
+    MCP["<b>5. Telemetry MCP Server (:8100)</b><br/>Fornisce i soli dati numerici grezzi<br/>del range richiesto (es. Lap 1-20)"]
+
+    Plotly["<b>6. Generatore Plotly & KPI</b><br/>• Calcola Medie, Massimi e Minimi<br/>• Disegna curve temporali<br/>• Sovrappone linee soglia (es. Limite 80%)"]
+
+    Dashboard(["<b>🏁 Dashboard Interattiva per l'Ingegnere</b><br/>Grafici dinamici sincronizzati con l'analisi AI"])
+
+    %% Connessioni
+    AI --> UI
+    UI --> Router
+    Router --> Gomme
+    Router --> Energia
+    Router --> Freni
+    Router --> Posizione
+
+    Gomme & Energia & Freni & Posizione <-->|Richiede solo i dati dei giri mirati| MCP
+    Gomme & Energia & Freni & Posizione --> Plotly
+    Plotly --> Dashboard
+
+    %% Stili grafici per presentazione
+    style AI fill:#6366f1,stroke:#4338ca,stroke-width:2px,color:#fff
+    style UI fill:#1e1e38,stroke:#6366f1,stroke-width:2px,color:#fff
+    style Router fill:#f59e0b,stroke:#d97706,stroke-width:2px,color:#000
+    style MCP fill:#10b981,stroke:#059669,stroke-width:2px,color:#fff
+    style Plotly fill:#8b5cf6,stroke:#7c3aed,stroke-width:2px,color:#fff
+    style Dashboard fill:#ec4899,stroke:#db2777,stroke-width:2px,color:#fff
+    style RENDERERS fill:#15152a,stroke:#4b5563,stroke-dasharray: 5 5,color:#c8c8e0

@@ -1,0 +1,16 @@
+sequenceDiagram
+    autonumber
+    actor Utente as Ingegnere (Browser)
+    participant UI as interface.py (:8501)
+    participant Client as mcp_client.py (:8000)
+    participant OCI as Oracle Cloud (OCI GenAI)
+    participant VS as OCI Vector Store
+
+    Utente->>UI: Digita domanda tecnica sul regolamento
+    UI->>Client: POST /query {"query": "..."}
+    Client->>OCI: client.responses.create(tools=[file_search])
+    OCI->>VS: Ricerca semantica vettoriale nei PDF (embeddings)
+    VS-->>OCI: Restituisce estratti del regolamento e del dossier tecnico
+    OCI-->>Client: Genera risposta argomentata citando le sezioni di legge
+    Client-->>UI: {"answer": "L'ala posteriore non è conforme perché l'art. 3.2..."}
+    UI-->>Utente: Visualizza la risposta nella chat dell'Experimental Lab

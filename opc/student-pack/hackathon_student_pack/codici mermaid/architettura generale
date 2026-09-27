@@ -1,0 +1,46 @@
+graph TD
+    subgraph Frontend ["Interfaccia Utente (Streamlit :8501)"]
+        UI["interface.py"]
+        Lab["1. Experimental Lab (RAG)"]
+        InRace["2. In-Race Analyzer (Lap by Lap)"]
+        PostRace["3. Post-Race Analyzer (Dashboard)"]
+        UI --> Lab
+        UI --> InRace
+        UI --> PostRace
+    end
+
+    subgraph Middleware ["AI Orchestrator & RAG (:8000)"]
+        Client["mcp_client.py (FastAPI)"]
+        RAG_EP["POST /query (RAG Documentale)"]
+        Tel_EP["POST /query_telemetria (Tool Calling)"]
+        Dash_EP["POST /query_telemetria_dashboard (Config JSON)"]
+        Client --> RAG_EP
+        Client --> Tel_EP
+        Client --> Dash_EP
+    end
+
+    subgraph TelemetryServer ["MCP Telemetry Server (:8100)"]
+        Server["mcp_server.py (FastAPI)"]
+        Tools["get_lap_window, compare_to_wear_model, get_strategy_context, ..."]
+        DataJSON["telemetry/race_session_telemetry.json"]
+        DataJSONL["telemetry/race_session_telemetry_stream.jsonl"]
+        Server --> Tools
+        Tools --> DataJSON
+        Tools --> DataJSONL
+    end
+
+    subgraph Cloud ["Oracle Cloud Infrastructure (OCI)"]
+        OCI_LLM["OCI Generative AI (LLM)"]
+        OCI_VS["OCI Vector Store (Regolamenti + Dossier)"]
+    end
+
+    Lab -->|POST /query| RAG_EP
+    InRace -->|POST /query_telemetria| Tel_EP
+    PostRace -->|POST /query_telemetria_dashboard| Dash_EP
+    PostRace -->|GET /tools/...| Server
+
+    RAG_EP -->|file_search| OCI_VS
+    Tel_EP -->|Function Calling Loop| OCI_LLM
+    Tel_EP -->|Esegue Tool| Server
+    Dash_EP -->|Genera Risposta + Grafici| OCI_LLM
+    Dash_EP -->|Esegue Tool| Server

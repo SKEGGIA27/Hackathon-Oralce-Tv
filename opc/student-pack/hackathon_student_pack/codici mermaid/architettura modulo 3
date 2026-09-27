@@ -1,0 +1,46 @@
+sequenceDiagram
+    autonumber
+    actor Utente as Ingegnere (Browser)
+    participant UI as interface.py (:8501)
+    participant Client as mcp_client.py (:8000)
+    participant Server as mcp_server.py (:8100)
+    participant OCI as OCI Generative AI (LLM)
+
+    %% 1. Input Utente e selezione Chip
+    Utente->>UI: Attiva Chip (es. "Gomme", "Energia") + Domanda:<br/>"Analizza il degrado nei primi 20 giri"
+    
+    %% 2. Chiamata al Middleware
+    UI->>Client: POST /query_telemetria_dashboard<br/>{"query": "...", "active_chips": ["gomme", "energia"]}
+    
+    %% 3. Recupero Tool MCP e preparazione Prompt
+    Client->>Server: GET /tools (richiede specifiche tool MCP)
+    Server-->>Client: Restituisce JSON Schema dei tool
+    
+    %% 4. Prima chiamata all'LLM con System Prompt restrittivo
+    Note over Client,OCI: Applica DASHBOARD_SYSTEM_PROMPT:<br/>obbliga l'LLM a restituire SOLO JSON<br/>con 'answer' e 'chart_config'
+    Client->>OCI: Invia Prompt + Chip Attive + Tool MCP disponibili
+    
+    %% 5. Tool Calling ReAct
+    Note over OCI: L'LLM decide quali dati servono<br/>e richiede di invocare i tool
+    OCI-->>Client: tool_calls: [get_lap_window(start_lap=1, end_lap=20, fields="...")]
+    
+    Client->>Server: GET /tools/get_lap_window?start_lap=1&end_lap=20&...
+    Server-->>Client: Restituisce record telemetrici dei giri 1-20
+    
+    Client->>OCI: Invia i dati telemetrici (role="tool")
+    
+    %% 6. Risposta Finale strutturata JSON
+    Note over OCI: L'LLM formula l'analisi testuale<br/>e definisce i parametri grafici
+    OCI-->>Client: Restituisce JSON strutturato:<br/>{"answer": "...", "chart_config": {...}}
+    
+    %% 7. Parsing e ritorno alla UI
+    Note over Client: _parse_dashboard_response()<br/>estrae e valida answer e chart_config
+    Client-->>UI: {"answer": "...", "chart_config": {"start_lap": 1, "end_lap": 20, ...}}
+    
+    %% 8. Rendering Dinamico della Dashboard
+    Note over UI: 1. Mostra la risposta dell'AI nell'answer-box<br/>2. Legge chart_config per configurare i grafici
+    UI->>Server: GET /tools/get_lap_window (scarica dati grezzi lap 1-20 per il rendering)
+    Server-->>UI: Array JSON dei giri per Plotly
+    
+    Note over UI: Renderizza metriche (AVG, MIN, MAX)<br/>e disegna i grafici Plotly personalizzati
+    UI-->>Utente: Visualizza Risposta AI + Grafici Plotly (Gomme & Energia 1-20)

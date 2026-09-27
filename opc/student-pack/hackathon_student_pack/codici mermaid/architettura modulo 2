@@ -1,0 +1,26 @@
+sequenceDiagram
+    autonumber
+    actor Utente as Ingegnere di Pista
+    participant UI as interface.py (:8501)
+    participant Client as mcp_client.py (:8000)
+    participant Server as mcp_server.py (:8100)
+    participant OCI as OCI Generative AI (LLM)
+
+    Utente->>UI: "Come sono messe le gomme anteriori al giro 23?"
+    UI->>Client: POST /query_telemetria
+    Client->>Server: GET /tools (scarica le definizioni JSON dei tool)
+    Server-->>Client: Restituisce lista tool (compare_to_wear_model, ecc.)
+    Client->>OCI: Invia Prompt Utente + Schemi dei Tool disponibili
+    
+    Note over OCI: L'LLM capisce che non può inventarsi i dati.<br/>Decide di invocare il tool compare_to_wear_model
+    OCI-->>Client: tool_calls: [compare_to_wear_model(corner="front_left", start_lap=1, end_lap=23)]
+    
+    Client->>Server: GET /tools/compare_to_wear_model?corner=front_left&start_lap=1&end_lap=23
+    Note over Server: Calcola usura reale vs teorica.<br/>Rileva gap anomalo +18pp (CRITICAL)
+    Server-->>Client: Risponde con il JSON della telemetria
+    
+    Client->>OCI: Invia i risultati del tool (role="tool")
+    Note over OCI: L'LLM sintetizza i dati numerici<br/>in una diagnosi per l'ingegnere
+    OCI-->>Client: "L'anteriore sinistra presenta un degrado anomalo di +18pp..."
+    Client-->>UI: {"answer": "..."}
+    UI-->>Utente: Mostra la risposta analitica nella chat
